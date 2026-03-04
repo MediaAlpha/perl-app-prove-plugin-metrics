@@ -6,7 +6,8 @@ This package provides a mechanism to emit pass-rate metrics from Perl unit tests
 
 What's new in version 0.0.1:
 ----------------------------
-* Nothing yet
+* File output support
+* Module dispatch support
 
 Copyright & License:
 --------------------
