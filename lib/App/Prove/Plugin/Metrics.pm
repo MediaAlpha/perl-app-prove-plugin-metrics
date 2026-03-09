@@ -80,7 +80,7 @@ The character class of characters that may appear in the final metric name.  All
 
 =item rollup
 
-If C<rollup=1>, the metric value will be the total number of passing tests at that metric name.  When C<rollup=0>, the default, the metric value will be a Boolean pass/fail value (0 or 1).
+If C<rollup=1>, the metric value will be the percentage of passing tests at that metric name (0 to 1 inclusive).  When C<rollup=0>, the default, the metric value will be a Boolean pass/fail value (0 or 1).
 
 =back
 
