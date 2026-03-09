@@ -79,12 +79,14 @@ sub name {
 
 sub collate {
 	my ($self,@metrics)=@_;
-	my %res;
+	my (%res,%count);
 	foreach my $event (@metrics) {
 		my $name=$self->name(%$event);
+		$count{$name}++;
 		if($$self{rollup}) { $res{$name}+=$$event{pass} }
 		else { $res{$name}//=1; $res{$name}&&=$$event{pass} }
 	}
+	if($$self{rollup}) { foreach my $k (keys %res) { $res{$k}/=$count{$k} } }
 	return %res;
 }
 
