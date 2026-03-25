@@ -58,6 +58,11 @@ sub next {
 			if($#{$$metrics{path}}>=$indent) { splice(@{$$metrics{path}},$indent) }
 			$self->log(($+{not}?0:1),$$metrics{source},$+{label},@{$$metrics{path}//[]});
 		}
+		elsif($raw=~/^(?<indent>\s*)(?<not>not )?ok\s+\d+$/) {
+			my $indent=length($+{indent})/4;
+			if($#{$$metrics{path}}>=$indent) { splice(@{$$metrics{path}},$indent) }
+			$self->log(($+{not}?0:1),$$metrics{source},'',@{$$metrics{path}//[]});
+		}
 	}
 	return $next;
 }
