@@ -22,6 +22,16 @@ sub new {
 	return $self;
 }
 
+sub log {
+	my ($self,$pass,$file,$label,@path)=@_;
+	push @{$$self{$METRICS}{log}},{
+		file=>$file,
+		pass=>$pass,
+		path=>[@path],
+		label=>$label//'',
+	};
+}
+
 sub next {
 	my ($self,@args)=@_;
 	my $next=$self->SUPER::next(@args);
@@ -36,15 +46,17 @@ sub next {
 			if($#{$$metrics{path}}>$indent) { splice(@{$$metrics{path}},$indent) }
 			push @{$$metrics{path}},$+{name};
 		}
+		elsif($raw=~/^(?<indent>\s*)not ok\s+\d+\s+-\s*No tests run for subtest "(?<label>.*)"\s*$/) {
+			my $indent=length($+{indent})/4;
+			if($#{$$metrics{path}}>$indent) { splice(@{$$metrics{path}},$indent) }
+			$self->log(0,$$metrics{source},'',@{$$metrics{path}//[]});
+			pop(@{$$metrics{path}});
+			$self->log(0,$$metrics{source},$+{label},@{$$metrics{path}//[]});
+		}
 		elsif($raw=~/^(?<indent>\s*)(?<not>not )?ok\s+\d+\s+-\s*(?<label>.*)$/) {
 			my $indent=length($+{indent})/4;
 			if($#{$$metrics{path}}>=$indent) { splice(@{$$metrics{path}},$indent) }
-			push @{$$metrics{log}},{
-				file=>$$metrics{source},
-				pass=>($+{not}?0:1),
-				path=>[@{$$metrics{path}//[]}],
-				label=>$+{label},
-			};
+			$self->log(($+{not}?0:1),$$metrics{source},$+{label},@{$$metrics{path}//[]});
 		}
 	}
 	return $next;
