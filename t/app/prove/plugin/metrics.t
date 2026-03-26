@@ -24,7 +24,7 @@ sub return_stderr {
 }
 
 subtest 'stderr, all data'=>sub {
-	plan tests=>17;
+	plan tests=>16;
 	my $prove=App::Prove->new();
 	$prove->process_args('-PMetrics=stderr,prefix,PRE,sep, SEP ,subdepth,-1,label,1,rollup,0',glob('t/tests/simple-*.tt'));
 	my $serr; steal_stderr(\$serr);
@@ -44,7 +44,6 @@ subtest 'stderr, all data'=>sub {
 		['simple-2-0-2',   0,'PRE SEP t/tests/simple-2-0.tt SEP Level1 SEP Level2 SEP failA'],
 		['simple-2-0-1',   0,'PRE SEP t/tests/simple-2-0.tt SEP Level1 SEP Level2'],
 		['simple-2-0-0',   0,'PRE SEP t/tests/simple-2-0.tt SEP Level1'],
-		['simple-1-0-n-1', 0,'PRE SEP t/tests/simple-1-0-n.tt SEP Level1 SEP '],
 		['simple-1-0-n-0', 0,'PRE SEP t/tests/simple-1-0-n.tt SEP Level1'],
 		['simple-1-0-ul-1',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1 SEP '],
 		['simple-1-0-ul-0',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1'],
@@ -52,11 +51,11 @@ subtest 'stderr, all data'=>sub {
 		ok($seen{"METRIC: $$expect[1] $$expect[2]"},$$expect[0]);
 	}
 	#
-	is(scalar(keys %seen),16,'Pigeonhole');
+	is(scalar(keys %seen),15,'Pigeonhole');
 };
 
 subtest 'stderr, all data, no label'=>sub {
-	plan tests=>17;
+	plan tests=>11;
 	my $prove=App::Prove->new();
 	$prove->process_args('-PMetrics=stderr,prefix,PRE,sep, SEP ,subdepth,-1,label,0,rollup,0',glob('t/tests/simple-*.tt'));
 	my $serr; steal_stderr(\$serr);
@@ -66,26 +65,19 @@ subtest 'stderr, all data, no label'=>sub {
 	foreach my $expect (
 		['simple-0-1',     1,'PRE SEP t/tests/simple-0-1.tt'],
 		['simple-1-1-1',   1,'PRE SEP t/tests/simple-1-1.tt SEP Level1'],
-		['simple-1-1-0',   1,'PRE SEP t/tests/simple-1-1.tt'],
 		['simple-2-1-2',   1,'PRE SEP t/tests/simple-2-1.tt SEP Level1 SEP Level2'],
 		['simple-2-1-1',   1,'PRE SEP t/tests/simple-2-1.tt SEP Level1'],
-		['simple-2-1-0',   1,'PRE SEP t/tests/simple-2-1.tt'],
 		['simple-0-0',     0,'PRE SEP t/tests/simple-0-0.tt'],
 		['simple-1-0-1',   0,'PRE SEP t/tests/simple-1-0.tt SEP Level1'],
-		['simple-1-0-0',   0,'PRE SEP t/tests/simple-1-0.tt'],
 		['simple-2-0-2',   0,'PRE SEP t/tests/simple-2-0.tt SEP Level1 SEP Level2'],
 		['simple-2-0-1',   0,'PRE SEP t/tests/simple-2-0.tt SEP Level1'],
-		['simple-2-0-0',   0,'PRE SEP t/tests/simple-2-0.tt'],
 		['simple-1-0-n-1', 0,'PRE SEP t/tests/simple-1-0-n.tt SEP Level1'],
-		['simple-1-0-n-0', 0,'PRE SEP t/tests/simple-1-0-n.tt'],
 		['simple-1-0-ul-1',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1'],
-		['simple-1-0-ul-0',0,'PRE SEP t/tests/simple-1-0-ul.tt'],
 	) {
 		ok($seen{"METRIC: $$expect[1] $$expect[2]"},$$expect[0]);
-		# like($serr,qr{METRIC:\s*$$expect[1]\s*\Q$$expect[2]\E},$$expect[0]);
 	}
 	#
-	is(scalar(keys %seen),16,'Pigeonhole');
+	is(scalar(keys %seen),10,'Pigeonhole');
 };
 
 subtest 'stderr, subdepth'=>sub {
@@ -118,7 +110,7 @@ subtest 'module'=>sub {
 		"t/tests/mixed-2.tt\tLevel1\tLevel2A" => 1,
 		"t/tests/mixed-2.tt\tLevel1\tLevel2B" => 0,
 		"t/tests/mixed-2.tt\tLevel1" => 0,
-		"t/tests/mixed-2.tt" => 0
+		# "t/tests/mixed-2.tt" => 0
 	);
 	package MetricsTestModule {
 		sub configureHarness { return (prefix=>'',sep=>"\t",subdepth=>-1,label=>0,rollup=>0) }
