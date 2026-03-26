@@ -30,6 +30,7 @@ subtest 'stderr, all data'=>sub {
 	my $serr; steal_stderr(\$serr);
 	$prove->run();
 	return_stderr();
+	my %seen=map {$_=>1} map {s/\s+/ /gr} grep {/^METRIC:/} split(/\n/,$serr);
 	foreach my $expect (
 		['simple-0-1',     1,'PRE SEP t/tests/simple-0-1.tt SEP okA'],
 		['simple-1-1-1',   1,'PRE SEP t/tests/simple-1-1.tt SEP Level1 SEP okA'],
@@ -48,10 +49,10 @@ subtest 'stderr, all data'=>sub {
 		['simple-1-0-ul-1',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1 SEP '],
 		['simple-1-0-ul-0',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1'],
 	) {
-		like($serr,qr{METRIC:\s*$$expect[1]\s*\Q$$expect[2]\E},$$expect[0]);
+		ok($seen{"METRIC: $$expect[1] $$expect[2]"},$$expect[0]);
 	}
 	#
-	is(scalar(grep {/^METRIC:/} split(/\n/,$serr)),16,'Pigeonhole');
+	is(scalar(keys %seen),16,'Pigeonhole');
 };
 
 subtest 'stderr, all data, no label'=>sub {
@@ -61,6 +62,7 @@ subtest 'stderr, all data, no label'=>sub {
 	my $serr; steal_stderr(\$serr);
 	$prove->run();
 	return_stderr();
+	my %seen=map {$_=>1} map {s/\s+/ /gr} grep {/^METRIC:/} split(/\n/,$serr);
 	foreach my $expect (
 		['simple-0-1',     1,'PRE SEP t/tests/simple-0-1.tt'],
 		['simple-1-1-1',   1,'PRE SEP t/tests/simple-1-1.tt SEP Level1'],
@@ -79,10 +81,11 @@ subtest 'stderr, all data, no label'=>sub {
 		['simple-1-0-ul-1',0,'PRE SEP t/tests/simple-1-0-ul.tt SEP Level1'],
 		['simple-1-0-ul-0',0,'PRE SEP t/tests/simple-1-0-ul.tt'],
 	) {
-		like($serr,qr{METRIC:\s*$$expect[1]\s*\Q$$expect[2]\E},$$expect[0]);
+		ok($seen{"METRIC: $$expect[1] $$expect[2]"},$$expect[0]);
+		# like($serr,qr{METRIC:\s*$$expect[1]\s*\Q$$expect[2]\E},$$expect[0]);
 	}
 	#
-	is(scalar(grep {/^METRIC:/} split(/\n/,$serr)),16,'Pigeonhole');
+	is(scalar(keys %seen),16,'Pigeonhole');
 };
 
 subtest 'stderr, subdepth'=>sub {
