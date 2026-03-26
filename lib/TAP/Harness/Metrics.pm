@@ -73,7 +73,7 @@ sub name {
 	my ($self,%event)=@_;
 	my @path=@{$event{path}};
 	if(defined($$self{subdepth})&&($$self{subdepth}>=0)) { splice(@path,$$self{subdepth}) }
-	my @name=map {s/[^$$self{allowed}]//sgr} (($$self{prefix}?$$self{prefix}:()),$event{file},@path,($$self{label}?$event{label}:()));
+	my @name=map {s/[^$$self{allowed}]//sgr} (($$self{prefix}?$$self{prefix}:()),$event{file},@path,($$self{label}&&defined($event{label})?$event{label}:()));
 	return join($$self{sep},@name);
 }
 
