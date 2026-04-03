@@ -88,38 +88,14 @@ sub bubbled {
 sub collateRollup {
 	my ($self,@metrics)=@_;
 	my (%res,%count);
-	#
-	# This can be cleaned up
-	#
 	foreach my $event (@metrics) {
-		if($$self{label}) {
-			if(defined($$event{label})) {
-				foreach my $name ($self->name(%$event), $self->bubbled(%$event)) {
-					$count{$name}++;
-					$res{$name}+=$$event{pass};
-				}
-			}
-			else { # !event{label}
-				local($$self{label})=0;
-				if(my $name=$self->bubbled(%$event)) {
-					$count{$name}++;
-					$res{$name}+=$$event{pass};
-				}
-			}
-		}
-		else { # !self{label}
-			if(defined($$event{label})) {
-				my $name=$self->name(%$event);
-				$count{$name}++;
-				$res{$name}+=$$event{pass};
-			}
-			else { # !event{label}
-				if(my $name=$self->bubbled(%$event)) {
-					$count{$name}++;
-					$res{$name}+=$$event{pass};
-				}
-			}
-		}
+		if(defined($$event{label})) {
+			foreach my $name ($self->name(%$event), ($$self{label}?$self->bubbled(%$event):())) {
+				$count{$name}++; $res{$name}+=$$event{pass} } }
+		else {
+			local($$self{label})=0;
+			foreach my $name ($self->bubbled(%$event)) {
+				$count{$name}++; $res{$name}+=$$event{pass} } }
 	}
 	foreach my $k (keys %res) { $res{$k}/=$count{$k} }
 	return %res;
@@ -129,11 +105,9 @@ sub collate {
 	my ($self,@metrics)=@_;
 	my (%res,%count);
 	if($$self{rollup}) { return $self->collateRollup(@metrics) }
-	#
 	foreach my $event (@metrics) {
 	foreach my $name ($self->name(%$event), ($$self{bubble}?$self->bubbled(%$event):())) {
-		$count{$name}++; $res{$name}//=1; $res{$name}&&=$$event{pass};
-	} }
+		$count{$name}++; $res{$name}//=1; $res{$name}&&=$$event{pass} } }
 	return %res;
 }
 
