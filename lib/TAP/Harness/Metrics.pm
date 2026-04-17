@@ -4,7 +4,7 @@ use parent qw/TAP::Harness/;
 use strict;
 use warnings;
 
-our $VERSION='0.0.3';
+our $VERSION='0.0.4';
 
 use Carp qw/confess/;
 use Fcntl qw/:flock/;
